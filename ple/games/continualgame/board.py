@@ -104,8 +104,8 @@ class Board(object):
 
     def populateMap(self):
         j = randint(0,10)
-        s = "map"+str(j)+".txt"
-        self.map = np.loadtxt(s, dtype='i', delimiter=',') #load new map everytime        
+        map_file = os.path.join(_dir, '../maps/map{}.txt'.format(j))
+        self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime        
         for x in range(len(self.map)):
             for y in range(len(self.map[x])):
                 if self.map[x][y] == 1:
