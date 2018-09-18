@@ -21,7 +21,6 @@ class customgame(PyGameWrapper):
 		"""
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
-		self.vec = None
 		self.status = 2
 		actions = {
 			"left": K_a,
