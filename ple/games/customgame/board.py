@@ -24,6 +24,7 @@ class Board(object):
         self.__actHeight = height
         self.__height = self.__actHeight + 10
         self.score = 0
+        self.vec = vec
         self.rewards = rewards
         self.cycles = 0  # For the characters animation
         self.direction = 0
@@ -114,6 +115,9 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
+            num_fires = int(np.abs(np.random.normal(loc=self.vec[0], scale=1.0)))
+            num_enemies = int(np.abs(np.random.normal(loc=self.vec[1], scale=1.0)))
+
             b_pos = []
             for x in range(len(self.map)):
                 for y in range(len(self.map[x])):
@@ -121,19 +125,27 @@ class Board(object):
                         b_pos.append((x,y))
 
             # adding random fire
-            fire1 = b_pos[np.random.choice(range(len(b_pos)))]
-            if (fire1[0], fire1[1] -1) in b_pos:
-                fire2 = (fire1[0], fire1[1] - 1)
-            elif (fire1[0], fire1[0] + 1) in b_pos:
-                fire2 = (fire1[0], fire1[1] + 1)
+            while num_fires > 0:
+                fire1 = b_pos[np.random.choice(range(len(b_pos)))]
+                if (fire1[0], fire1[1] -1) in b_pos:
+                    fire2 = (fire1[0], fire1[1] - 1)
+                    self.map[fire2[0]][fire2[1]] = 12
+                    b_pos.remove(fire2)
+                elif (fire1[0], fire1[1] + 1) in b_pos:
+                    fire2 = (fire1[0], fire1[1] + 1)
+                    self.map[fire2[0]][fire2[1]] = 12
+                    b_pos.remove(fire2)
 
-            self.map[fire1[0]][fire1[1]] = 12
-            self.map[fire2[0]][fire2[1]] = 12
-            b_pos.remove(fire1); b_pos.remove(fire2)
+                self.map[fire1[0]][fire1[1]] = 12
+                b_pos.remove(fire1)
+                num_fires -= 1
 
             # adding random enemy pos
-            enemy_idx = b_pos[np.random.choice(range(len(b_pos)))]
-            b_pos.remove(enemy_idx)
+            while num_enemies > 0:
+                enemy_idx = b_pos[np.random.choice(range(len(b_pos)))]
+                self.map[enemy_idx[0] - 1][enemy_idx[1]] = 11
+                b_pos.remove(enemy_idx)
+                num_enemies -= 1
 
             # adding random agent pos
             agent_idx = b_pos[np.random.choice(range(len(b_pos)))]
@@ -143,7 +155,6 @@ class Board(object):
             princess_idx = b_pos[np.random.choice(range(len(b_pos)))]
             b_pos.remove(princess_idx)
 
-            self.map[enemy_idx[0] - 1][enemy_idx[1]] = 11
             self.map[agent_idx[0] - 1][agent_idx[1]] = 21
             self.map[princess_idx[0] - 1][princess_idx[1]] = 20
 
