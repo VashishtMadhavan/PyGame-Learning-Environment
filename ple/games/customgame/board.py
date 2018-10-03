@@ -156,7 +156,6 @@ class Board(object):
     def populateMap(self):
         if self.epCtr == 2:
             j = randint(0,10)
-            print("New Sampled Map: ", j)
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 

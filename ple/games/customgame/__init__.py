@@ -56,8 +56,6 @@ class customgame(PyGameWrapper):
 		}
 
 	def init(self):
-		print("Initing..")
-		print("epCtr..", self.epCtr)
 		if hasattr(self, 'newGame'):
 			oldMap = self.newGame.oldMap.copy()
 		else:
