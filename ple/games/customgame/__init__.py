@@ -19,10 +19,13 @@ class customgame(PyGameWrapper):
 		None
 
 		"""
+		# new variables
+		self.flag = 1
+		self.epCtr = 2
+
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
 		self.vec = vec
-		self.epCtr = 4
 		self.status = 2
 		actions = {
 			"left": K_a,
@@ -53,11 +56,14 @@ class customgame(PyGameWrapper):
 		}
 
 	def init(self):
-		# Create a new instance of the Board class
+		print("Initing..")
+		print("epCtr..", self.epCtr)
 		if hasattr(self, 'newGame'):
-			oldMap = self.newGame.initMap.copy()
+			oldMap = self.newGame.oldMap.copy()
 		else:
 			oldMap = None
+
+		# Create a new instance of the Board class
 		self.newGame = Board(
 			self.vec,
 			self.width,
@@ -67,13 +73,15 @@ class customgame(PyGameWrapper):
 			self.rewards,
 			self._dir)
 
-		if self.epCtr == 4:
-			self.epCtr = 0
-		self.epCtr += 1
+		if not self.flag:
+			if self.epCtr == 2:
+				self.epCtr = 0
+			self.epCtr += 1
+		else:
+			self.flag = 0
 
 		# Assign groups from the Board instance that was created
 		self.playerGroup = self.newGame.playerGroup
-
 		self.numactions = 0
 
 	def getScore(self):
@@ -82,7 +90,6 @@ class customgame(PyGameWrapper):
 	def update_vec(self, vec):
 		self.vec = vec
 		self.init()
-
 
 	def game_over(self):
 		if(self.numactions > 2000 or self.newGame.lives <=0): #max episode length is 2000 steps. 

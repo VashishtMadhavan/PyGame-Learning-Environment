@@ -19,13 +19,15 @@ class Board(object):
     The generation of the level also happens in this class.
     '''
     def __init__(self, vec, width, height, epCtr, oldMap, rewards, _dir):
+        # new variables
+        self.epCtr = epCtr
+        self.oldMap = oldMap
+
         self.__width = width
         self.__actHeight = height
         self.__height = self.__actHeight + 10
         self.score = 0
         self.vec = vec
-        self.oldMap = oldMap
-        self.epCtr = epCtr
         self.rewards = rewards
         self.cycles = 0  # For the characters animation
         self.direction = 0
@@ -86,14 +88,15 @@ class Board(object):
         self.enemys2 = []
         self.Walls = []
         self.Ladders = []
-        self.initializeGame()  # This initializes the game and generates our map
-        #self.createGroups()  # This creates the instance groups
+
+        self.populateMap()  # This initializes the game and generates our map
+        self.createGroups()  # This creates the instance groups
 
     def resetGroups2(self):
         for wall in self.Walls: #need to kill wall and ladder sprites when we load a new map
-                    wall.kill()
+            wall.kill()
         for ladder in self.Ladders:
-                     ladder.kill()
+            ladder.kill()
         self.map = []  # We will create the map again when we reset the game
         self.Players = []
         self.Allies = []
@@ -101,8 +104,8 @@ class Board(object):
         self.enemys2 = []
         self.Walls = []
         self.Ladders = []   
-        self.initializeGame()  # This initializes the game and generates our map 
-        #self.createGroups()
+        self.populateMap()  # This initializes the game and generates our map 
+        self.createGroups()
 
     def placeFires(self, pos):
         removedPos = []
@@ -151,8 +154,9 @@ class Board(object):
         return False
 
     def populateMap(self):
-        if self.epCtr == 4:
+        if self.epCtr == 2:
             j = randint(0,10)
+            print("New Sampled Map: ", j)
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
@@ -194,9 +198,9 @@ class Board(object):
 
                 self.map[agentPos[0]][agentPos[1]] = 21
                 self.map[goalPos[0]][goalPos[1]] = 20
-            self.initMap = self.map.copy()
+            self.oldMap = self.map.copy()
+            self.epCtr -= 1
         else:
-            self.initMap = self.oldMap.copy()
             self.map = self.oldMap.copy()
 
         # post map fill, do this
@@ -317,10 +321,8 @@ class Board(object):
     
     # Check if the player wins
     def checkVictory(self,status):
-        # If you touch the princess you
-        # win!
+        # If you touch the princess you win!
         if self.Players[0].checkCollision(self.allyGroup):
-
             self.score += self.rewards["win"]
             self.lives = 0		
             status = 1
@@ -347,8 +349,3 @@ class Board(object):
         self.enemyGroup = pygame.sprite.RenderPlain(self.enemys)
         self.enemyGroup2 = pygame.sprite.RenderPlain(self.enemys2)
         self.allyGroup = pygame.sprite.RenderPlain(self.Allies)
-
-    
-    def initializeGame(self):
-        self.populateMap()
-        self.createGroups()
