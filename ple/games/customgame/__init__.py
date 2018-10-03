@@ -22,6 +22,7 @@ class customgame(PyGameWrapper):
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
 		self.vec = vec
+		self.epCtr = 4
 		self.status = 2
 		actions = {
 			"left": K_a,
@@ -52,14 +53,23 @@ class customgame(PyGameWrapper):
 		}
 
 	def init(self):
-	
 		# Create a new instance of the Board class
+		if hasattr(self, 'newGame'):
+			oldMap = self.newGame.initMap.copy()
+		else:
+			oldMap = None
 		self.newGame = Board(
 			self.vec,
 			self.width,
 			self.height,
+			self.epCtr,
+			oldMap,
 			self.rewards,
 			self._dir)
+
+		if self.epCtr == 4:
+			self.epCtr = 0
+		self.epCtr += 1
 
 		# Assign groups from the Board instance that was created
 		self.playerGroup = self.newGame.playerGroup
