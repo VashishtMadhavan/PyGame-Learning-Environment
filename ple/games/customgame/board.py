@@ -103,13 +103,58 @@ class Board(object):
         self.initializeGame()  # This initializes the game and generates our map 
         self.createGroups()
 
+    def placeFires(self, pos):
+        removedPos = []
+        x = pos[np.random.randint(low=0, high=len(pos))]
+        if x not in removedPos:
+            if (x[0], x[1] - 1) in pos:
+                y = (x[0], x[1] - 1)
+                removedPos.append(y)
+            elif (x[0], x[1] + 1) in pos:
+                y = (x[0], x[1] + 1)
+                removedPos.append(y)
+            removedPos.append(x)
+        return removedPos
+
+    def placeEnemies(self, pos, num_enemies):
+        removedPos = []
+        while num_enemies > 0:
+            x = pos[np.random.randint(low=0, high=len(pos))]
+            if x not in removedPos:
+                removedPos.append(x)
+                num_enemies -= 1
+        return removedPos
+
+    def checkPos(self, x, y, visited):
+        if x >=0 and x < len(self.map) and y >= 0 and y < len(self.map[0]):
+            return (self.map[x][y] == 0 or self.map[x][y] == 2) and ((x,y) not in visited)
+        return False
+
+    # return True if there is valid path from agent to princess
+    def checkPath(self, agentPos, goalPos):
+        stack = []; visited = set()
+        stack.append(agentPos)
+        while len(stack) != 0:
+            x = stack.pop(0)
+            if x == goalPos:
+                return True
+            visited.add(x)
+            if self.checkPos(x[0], x[1] - 1, visited):
+                stack.insert(0, (x[0], x[1] - 1))
+            if self.checkPos(x[0], x[1] + 1, visited):
+                stack.insert(0, (x[0], x[1] + 1))
+            if self.checkPos(x[0] + 1, x[1], visited):
+                stack.insert(0, (x[0] + 1, x[1]))
+            if self.checkPos(x[0] - 1, x[1], visited):
+                stack.insert(0, (x[0] - 1, x[1]))
+        return False
+
     def populateMap(self):
         j = randint(0,10)
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-
-        if j == 1 or j > 5:
+        if j != 3:
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
             self.map[self.map == 20] = 0 # removing init princess position
@@ -117,48 +162,36 @@ class Board(object):
 
             num_fires = int(np.abs(np.random.normal(loc=self.vec[0], scale=1.0)))
             num_enemies = int(np.abs(np.random.normal(loc=self.vec[1], scale=1.0)))
+            positions = [tuple(y) for y in np.argwhere(self.map == 1)]
 
-            b_pos = []
-            for x in range(len(self.map)):
-                for y in range(len(self.map[x])):
-                    if self.map[x][y] == 1:
-                        b_pos.append((x,y))
-
-            # adding random fire
+            # adding fires
             while num_fires > 0:
-                fire1 = b_pos[np.random.choice(range(len(b_pos)))]
-                if (fire1[0], fire1[1] -1) in b_pos:
-                    fire2 = (fire1[0], fire1[1] - 1)
-                    self.map[fire2[0]][fire2[1]] = 12
-                    b_pos.remove(fire2)
-                elif (fire1[0], fire1[1] + 1) in b_pos:
-                    fire2 = (fire1[0], fire1[1] + 1)
-                    self.map[fire2[0]][fire2[1]] = 12
-                    b_pos.remove(fire2)
-
-                self.map[fire1[0]][fire1[1]] = 12
-                b_pos.remove(fire1)
-                num_fires -= 1
+                firePos = self.placeFires(positions)
+                for fp in firePos:
+                    self.map[fp[0]][fp[1]] = 12
+                    positions.remove(fp)
+                num_fires -= 1            
 
             # adding random enemy pos
-            while num_enemies > 0:
-                enemy_idx = b_pos[np.random.choice(range(len(b_pos)))]
-                self.map[enemy_idx[0] - 1][enemy_idx[1]] = 11
-                b_pos.remove(enemy_idx)
-                num_enemies -= 1
+            enemyPos = self.placeEnemies(positions, num_enemies)
+            for ep in enemyPos:
+                self.map[ep[0] - 1][ep[1]] = 11
+                positions.remove(ep)
 
-            # adding random agent pos
-            agent_idx = b_pos[np.random.choice(range(len(b_pos)))]
-            b_pos.remove(agent_idx)
+            # adding random agent and princess position
+            agentPos = positions[np.random.randint(low=0, high=len(positions))]
+            goalPos = positions[np.random.randint(low=0, high=len(positions))]
+            agentPos = (agentPos[0] - 1, agentPos[1])
+            goalPos = (goalPos[0] - 1, goalPos[1])
 
-            # adding random princess pos
-            princess_idx = b_pos[np.random.choice(range(len(b_pos)))]
-            b_pos.remove(princess_idx)
+            while not self.checkPath(agentPos, goalPos) or goalPos == agentPos:
+                agentPos = positions[np.random.randint(low=0, high=len(positions))]
+                goalPos = positions[np.random.randint(low=0, high=len(positions))]
+                agentPos = (agentPos[0] - 1, agentPos[1])
+                goalPos = (goalPos[0] - 1, goalPos[1])
 
-            self.map[agent_idx[0] - 1][agent_idx[1]] = 21
-            self.map[princess_idx[0] - 1][princess_idx[1]] = 20
-
-            # TODO: how do we create a vector that encodes different elements of game
+            self.map[agentPos[0]][agentPos[1]] = 21
+            self.map[goalPos[0]][goalPos[1]] = 20
 
         # post map fill, do this
         for x in range(len(self.map)):
