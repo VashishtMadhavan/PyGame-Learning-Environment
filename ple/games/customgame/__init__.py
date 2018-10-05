@@ -21,7 +21,7 @@ class customgame(PyGameWrapper):
 		"""
 		# new variables
 		self.flag = 1
-		self.epCtr = 2
+		self.epCtr = 1
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
@@ -72,7 +72,7 @@ class customgame(PyGameWrapper):
 			self._dir)
 
 		if not self.flag:
-			if self.epCtr == 2:
+			if self.epCtr == 1:
 				self.epCtr = 0
 			self.epCtr += 1
 		else:
