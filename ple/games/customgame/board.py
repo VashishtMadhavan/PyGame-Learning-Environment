@@ -107,6 +107,7 @@ class Board(object):
         self.populateMap()  # This initializes the game and generates our map 
         self.createGroups()
 
+    # TODO: stochastically sample a fire triple instead of just fire doubles
     def placeFires(self, pos):
         removedPos = []
         x = pos[np.random.randint(low=0, high=len(pos))]
@@ -154,53 +155,53 @@ class Board(object):
         return False
 
     def populateMap(self):
-        if self.epCtr == 2:
-            j = randint(0,10)
-            map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
-            self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
+        #if self.epCtr == 2:
+        j = randint(0,10)
+        map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
+        self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-            if j != 3:
-                self.map[self.map == 12] = 1 # removing init fire position
-                self.map[self.map == 21] = 0 # removing init agent position
-                self.map[self.map == 20] = 0 # removing init princess position
-                self.map[self.map == 11] = 0 # removing init enemy position
+        if j != 3:
+            self.map[self.map == 12] = 1 # removing init fire position
+            self.map[self.map == 21] = 0 # removing init agent position
+            self.map[self.map == 20] = 0 # removing init princess position
+            self.map[self.map == 11] = 0 # removing init enemy position
 
-                num_fires = int(np.abs(np.random.normal(loc=self.vec[0], scale=1.0)))
-                num_enemies = int(np.abs(np.random.normal(loc=self.vec[1], scale=1.0)))
-                positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+            num_fires = int(np.abs(np.random.normal(loc=self.vec[0], scale=1.0)))
+            num_enemies = int(np.abs(np.random.normal(loc=self.vec[1], scale=1.0)))
+            positions = [tuple(y) for y in np.argwhere(self.map == 1)]
 
-                # adding fires
-                while num_fires > 0:
-                    firePos = self.placeFires(positions)
-                    for fp in firePos:
-                        self.map[fp[0]][fp[1]] = 12
-                        positions.remove(fp)
-                    num_fires -= 1
+            # adding fires
+            while num_fires > 0:
+                firePos = self.placeFires(positions)
+                for fp in firePos:
+                    self.map[fp[0]][fp[1]] = 12
+                    positions.remove(fp)
+                num_fires -= 1
 
-                # adding random enemy pos
-                enemyPos = self.placeEnemies(positions, num_enemies)
-                for ep in enemyPos:
-                    self.map[ep[0] - 1][ep[1]] = 11
-                    positions.remove(ep)
+            # adding random enemy pos
+            enemyPos = self.placeEnemies(positions, num_enemies)
+            for ep in enemyPos:
+                self.map[ep[0] - 1][ep[1]] = 11
+                positions.remove(ep)
 
-                # adding random agent and princess position
+            # adding random agent and princess position
+            agentPos = positions[np.random.randint(low=0, high=len(positions))]
+            goalPos = positions[np.random.randint(low=0, high=len(positions))]
+            agentPos = (agentPos[0] - 1, agentPos[1])
+            goalPos = (goalPos[0] - 1, goalPos[1])
+
+            while not self.checkPath(agentPos, goalPos) or goalPos == agentPos:
                 agentPos = positions[np.random.randint(low=0, high=len(positions))]
                 goalPos = positions[np.random.randint(low=0, high=len(positions))]
                 agentPos = (agentPos[0] - 1, agentPos[1])
                 goalPos = (goalPos[0] - 1, goalPos[1])
 
-                while not self.checkPath(agentPos, goalPos) or goalPos == agentPos:
-                    agentPos = positions[np.random.randint(low=0, high=len(positions))]
-                    goalPos = positions[np.random.randint(low=0, high=len(positions))]
-                    agentPos = (agentPos[0] - 1, agentPos[1])
-                    goalPos = (goalPos[0] - 1, goalPos[1])
-
-                self.map[agentPos[0]][agentPos[1]] = 21
-                self.map[goalPos[0]][goalPos[1]] = 20
-            self.oldMap = self.map.copy()
-            self.epCtr -= 1
-        else:
-           self.map = self.oldMap.copy()
+            self.map[agentPos[0]][agentPos[1]] = 21
+            self.map[goalPos[0]][goalPos[1]] = 20
+        self.oldMap = self.map.copy()
+        self.epCtr -= 1
+        # else:
+        #    self.map = self.oldMap.copy()
 
         # post map fill, do this
         for x in range(len(self.map)):

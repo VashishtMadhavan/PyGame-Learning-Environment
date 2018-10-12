@@ -21,7 +21,7 @@ class customgame(PyGameWrapper):
 		"""
 		# new variables
 		self.flag = 1
-		self.epCtr = 2
+		self.epCtr = 1
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
@@ -41,7 +41,7 @@ class customgame(PyGameWrapper):
 		self.rewards = {
 			"positive": 0, 
 			"win": 1,
-			"negative": 0, 
+			"negative": 0,
 			"tick": 0
 		}
 		self.allowed_fps = 30
@@ -56,7 +56,7 @@ class customgame(PyGameWrapper):
 		}
 
 	def init(self):
-		print(self.epCtr)
+		#print(self.epCtr)
 		if hasattr(self, 'newGame'):
 			oldMap = self.newGame.oldMap.copy()
 		else:
@@ -73,7 +73,7 @@ class customgame(PyGameWrapper):
 			self._dir)
 
 		if not self.flag:
-			if self.epCtr == 2:
+			if self.epCtr == 1:
 				self.epCtr = 0
 			self.epCtr += 1
 		else:
