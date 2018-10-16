@@ -154,6 +154,14 @@ class Board(object):
                 stack.insert(0, (x[0] - 1, x[1]))
         return False
 
+
+    # TODO: figure out way to get A* Distance
+    def computeAStarDistance(self):
+        agent_pos = np.array(self.Players[0].getPosition())
+        princess_pos = np.array(self.Allies[0].getPosition())
+        return -1.0 * np.linalg.norm(agent_pos - princess_pos)
+
+
     def populateMap(self):
         #if self.epCtr == 2:
         #j = randint(0,10)
