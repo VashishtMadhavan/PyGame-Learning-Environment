@@ -84,8 +84,8 @@ class customgame(PyGameWrapper):
 		self.numactions = 0
 
 	def getScore(self):
-		return self.newGame.computeAStarDistance()
-		#return self.newGame.score
+		#return self.newGame.computeAStarDistance()
+		return self.newGame.score
 
 	def update_vec(self, vec):
 		self.vec = vec

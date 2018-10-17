@@ -8,7 +8,7 @@ from .person import Person
 from .onBoard import OnBoard
 from .enemy import enemy
 from .player import Player
-from random import randint
+from random import randint, choice
 
 #This game doesn't have any default location of princess or robot sprite - they can be anywhere depending on the map being used (their location are directly read from the map - 20 for princess, 21 for robot)
 
@@ -165,7 +165,7 @@ class Board(object):
     def populateMap(self):
         #if self.epCtr == 2:
         #j = randint(0,10)
-        j = np.random.choice([3, 0, 2, 4])
+        j = choice([3, 0, 2, 4])
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
