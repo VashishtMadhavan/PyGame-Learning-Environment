@@ -18,10 +18,11 @@ class Board(object):
     A gameboard contains everthing related to our game on it like our characters, walls, ladders, enemies etc
     The generation of the level also happens in this class.
     '''
-    def __init__(self, vec, width, height, epCtr, oldMap, rewards, _dir):
+    def __init__(self, vec, width, height, difficulty, epCtr, oldMap, rewards, _dir):
         # new variables
         self.epCtr = epCtr
         self.oldMap = oldMap
+        self.difficulty = difficulty
 
         self.__width = width
         self.__actHeight = height
@@ -164,12 +165,16 @@ class Board(object):
 
     def populateMap(self):
         #if self.epCtr == 2:
-        #j = randint(0,10)
-        j = choice([3, 0, 2])
+        if self.difficulty == 0:
+            j = choice([0, 2, 3, 4])
+        elif self.difficulty == 1:
+            j = choice([0, 2, 3, 4, 5, 6, 7, 8])
+        elif self.difficulty == 2:
+            j = choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-        if j != 3:
+        if j not in [3,4]:
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
             self.map[self.map == 20] = 0 # removing init princess position

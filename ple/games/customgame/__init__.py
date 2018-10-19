@@ -12,7 +12,7 @@ import os
 
 class customgame(PyGameWrapper):
 
-	def __init__(self, vec=None):
+	def __init__(self, vec=None, difficulty=0):
 		"""
 		Parameters
 		----------
@@ -22,6 +22,7 @@ class customgame(PyGameWrapper):
 		# new variables
 		self.flag = 1
 		self.epCtr = 1
+		self.difficulty = difficulty
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
@@ -67,6 +68,7 @@ class customgame(PyGameWrapper):
 			self.vec,
 			self.width,
 			self.height,
+			self.difficulty,
 			self.epCtr,
 			oldMap,
 			self.rewards,
@@ -86,10 +88,6 @@ class customgame(PyGameWrapper):
 	def getScore(self):
 		#return self.newGame.computeAStarDistance()
 		return self.newGame.score
-
-	def update_vec(self, vec):
-		self.vec = vec
-		self.init()
 
 	def game_over(self):
 		if(self.numactions > 2000 or self.newGame.lives <=0): #max episode length is 2000 steps. 
