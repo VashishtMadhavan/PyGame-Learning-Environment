@@ -8,7 +8,7 @@ from .person import Person
 from .onBoard import OnBoard
 from .enemy import enemy
 from .player import Player
-from random import randint, choice
+from random import randint, choice, gauss, random
 
 #This game doesn't have any default location of princess or robot sprite - they can be anywhere depending on the map being used (their location are directly read from the map - 20 for princess, 21 for robot)
 
@@ -108,28 +108,54 @@ class Board(object):
         self.populateMap()  # This initializes the game and generates our map 
         self.createGroups()
 
-    # TODO: stochastically sample a fire triple instead of just fire doubles
-    def placeFires(self, pos):
-        removedPos = []
-        x = pos[np.random.randint(low=0, high=len(pos))]
-        if x not in removedPos:
+    def placeFiresAndGaps(self, pos, num_fires):
+        removedPos = []; flags = []
+        while num_fires > 0:
+            x = pos[randint(0, len(pos) - 1)]
             if (x[0], x[1] - 1) in pos:
                 y = (x[0], x[1] - 1)
-                removedPos.append(y)
             elif (x[0], x[1] + 1) in pos:
                 y = (x[0], x[1] + 1)
-                removedPos.append(y)
-            removedPos.append(x)
-        return removedPos
+            else:
+                y = None
+            if x not in removedPos:
+                check = random() < 0.5
+                removedPos.append(x)
+                flags.append(check)
+                if y:
+                    removedPos.append(y)
+                    flags.append(check)
+                num_fires -= 1
+        return removedPos, flags
 
     def placeEnemies(self, pos, num_enemies):
         removedPos = []
         while num_enemies > 0:
-            x = pos[np.random.randint(low=0, high=len(pos))]
+            x = pos[randint(0, len(pos) - 1)]
             if x not in removedPos:
                 removedPos.append(x)
                 num_enemies -= 1
         return removedPos
+
+    def placeAgents(self, pos):
+        ap = pos[randint(0, len(pos) - 1)]
+        gp = pos[randint(0, len(pos) - 1)]
+        ap = (ap[0] - 1, ap[1])
+        gp = (gp[0] - 1, gp[1])
+
+        while not self.checkPath(ap, gp) or gp == ap:
+            ap = pos[randint(0, len(pos) - 1)]
+            gp = pos[randint(0, len(pos) - 1)]
+            ap = (ap[0] - 1, ap[1])
+            gp = (gp[0] - 1, gp[1])
+        return ap, gp
+
+    def removeInvalidPositions(self, pos):
+        toKeep = []
+        for x in pos:
+            if self.map[x[0] - 1][x[1]] == 0 and self.map[x[0]][x[1]] == 1:
+                toKeep.append(x)
+        return toKeep
 
     def checkPos(self, x, y, visited):
         if x >=0 and x < len(self.map) and y >= 0 and y < len(self.map[0]):
@@ -155,18 +181,17 @@ class Board(object):
                 stack.insert(0, (x[0] - 1, x[1]))
         return False
 
-
     # TODO: figure out way to get A* Distance
     def computeAStarDistance(self):
         agent_pos = np.array(self.Players[0].getPosition())
         princess_pos = np.array(self.Allies[0].getPosition())
         return -1.0 * np.linalg.norm(agent_pos - princess_pos)
 
-
     def populateMap(self):
         #if self.epCtr == 2:
         if self.difficulty == 0:
-            j = choice([0, 2, 3, 4])
+            #j = choice([0, 2, 3, 4])
+            j = choice([0, 2])
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
@@ -180,38 +205,32 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
-            num_fires = int(np.abs(np.random.normal(loc=self.vec[0], scale=1.0)))
-            num_enemies = int(np.abs(np.random.normal(loc=self.vec[1], scale=1.0)))
+            numFires = int(np.abs(gauss(self.vec[0] + 1, 1.0)))
+            numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+            positions = self.removeInvalidPositions(positions)
 
-            # adding fires
-            while num_fires > 0:
-                firePos = self.placeFires(positions)
-                for fp in firePos:
-                    self.map[fp[0]][fp[1]] = 12
-                    positions.remove(fp)
-                num_fires -= 1
-
-            # adding random enemy pos
-            enemyPos = self.placeEnemies(positions, num_enemies)
-            for ep in enemyPos:
-                self.map[ep[0] - 1][ep[1]] = 11
-                positions.remove(ep)
-
-            # adding random agent and princess position
-            agentPos = positions[np.random.randint(low=0, high=len(positions))]
-            goalPos = positions[np.random.randint(low=0, high=len(positions))]
-            agentPos = (agentPos[0] - 1, agentPos[1])
-            goalPos = (goalPos[0] - 1, goalPos[1])
-
-            while not self.checkPath(agentPos, goalPos) or goalPos == agentPos:
-                agentPos = positions[np.random.randint(low=0, high=len(positions))]
-                goalPos = positions[np.random.randint(low=0, high=len(positions))]
-                agentPos = (agentPos[0] - 1, agentPos[1])
-                goalPos = (goalPos[0] - 1, goalPos[1])
-
+            # place princess + agent
+            agentPos, goalPos = self.placeAgents(positions)
             self.map[agentPos[0]][agentPos[1]] = 21
             self.map[goalPos[0]][goalPos[1]] = 20
+            positions = self.removeInvalidPositions(positions)
+
+            # place fires
+            firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
+            for q, fp in enumerate(firePos):
+                if gapFlags[q]:
+                    self.map[fp[0]][fp[1]] = 12
+                else:
+                    self.map[fp[0]][fp[1]] = 0
+            positions = self.removeInvalidPositions(positions)
+
+            # place enemies
+            enemyPos = self.placeEnemies(positions, numEnemies)
+            for ep in enemyPos:
+                self.map[ep[0] - 1][ep[1]] = 11
+
+           
         self.oldMap = self.map.copy()
         self.epCtr -= 1
         # else:
