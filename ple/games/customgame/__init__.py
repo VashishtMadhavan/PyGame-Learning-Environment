@@ -12,7 +12,7 @@ import os
 
 class customgame(PyGameWrapper):
 
-	def __init__(self, vec=None, difficulty=0):
+	def __init__(self, vec=None, difficulty=0, astar=False):
 		"""
 		Parameters
 		----------
@@ -23,6 +23,7 @@ class customgame(PyGameWrapper):
 		self.flag = 1
 		self.epCtr = 1
 		self.difficulty = difficulty
+		self.astar = astar
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
@@ -86,7 +87,8 @@ class customgame(PyGameWrapper):
 		self.numactions = 0
 
 	def getScore(self):
-		#return self.newGame.computeAStarDistance()
+		if self.astar:
+			return -1.0 * self.newGame.computeAStarDistance()
 		return self.newGame.score
 
 	def game_over(self):

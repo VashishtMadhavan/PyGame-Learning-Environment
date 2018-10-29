@@ -159,7 +159,7 @@ class Board(object):
 
     def checkPos(self, x, y, visited):
         if x >=0 and x < len(self.map) and y >= 0 and y < len(self.map[0]):
-            return (self.map[x][y] == 0 or self.map[x][y] == 2) and ((x,y) not in visited)
+            return (self.map[x][y] in [0, 2, 20, 21]) and ((x,y) not in visited)
         return False
 
     # return True if there is valid path from agent to princess
@@ -181,11 +181,34 @@ class Board(object):
                 stack.insert(0, (x[0] - 1, x[1]))
         return False
 
-    # TODO: figure out way to get A* Distance
+    def findShortestPath(self, agentPos, goalPos):
+        queue = []; visited = set()
+        queue.append((agentPos, 0))
+        while len(queue) != 0:
+            x = queue.pop(0)
+            pos = x[0]; dist = x[1]
+            if pos == goalPos:
+                return dist
+            visited.add(pos)
+            if self.checkPos(pos[0], pos[1] - 1, visited):
+                queue.append(((pos[0], pos[1] - 1), dist + 1))
+            if self.checkPos(pos[0], pos[1] + 1, visited):
+                queue.append(((pos[0], pos[1] + 1), dist + 1))
+            if self.checkPos(pos[0] + 1, pos[1], visited):
+                queue.append(((pos[0] + 1, pos[1]), dist + 1))
+            if self.checkPos(pos[0] - 1, pos[1], visited):
+                queue.append(((pos[0] - 1, pos[1]), dist + 1))
+        return 10000
+
+
     def computeAStarDistance(self):
         agent_pos = np.array(self.Players[0].getPosition())
         princess_pos = np.array(self.Allies[0].getPosition())
-        return -1.0 * np.linalg.norm(agent_pos - princess_pos)
+        agent_pos = (agent_pos - 7.5) / 15; princess_pos = (princess_pos - 7.5) / 15
+        amap_x, amap_y = int(agent_pos[1]), int(agent_pos[0])
+        pmap_x, pmap_y = int(princess_pos[1]), int(princess_pos[0])
+        dist = self.findShortestPath((amap_x, amap_y), (pmap_x, pmap_y))
+        return dist
 
     def populateMap(self):
         #if self.epCtr == 2:
