@@ -162,6 +162,11 @@ class Board(object):
             return (self.map[x][y] in [0, 2, 20, 21]) and ((x,y) not in visited)
         return False
 
+    def checkPos2(self, x, y, visited):
+        if x >=0 and x < len(self.map) and y >= 0 and y < len(self.map[0]):
+            return (self.map[x][y] in [0, 2, 11, 20, 21]) and ((x,y) not in visited)
+        return False
+
     # return True if there is valid path from agent to princess
     def checkPath(self, agentPos, goalPos):
         stack = []; visited = set()
@@ -181,34 +186,37 @@ class Board(object):
                 stack.insert(0, (x[0] - 1, x[1]))
         return False
 
-    def findShortestPath(self, agentPos, goalPos):
+    def shortestPaths(self, goalPos):
         queue = []; visited = set()
-        queue.append((agentPos, 0))
+        self.aStarMap[goalPos[0]][goalPos[1]] = 0
+        queue.append(goalPos)
         while len(queue) != 0:
             x = queue.pop(0)
-            pos = x[0]; dist = x[1]
-            if pos == goalPos:
-                return dist
-            visited.add(pos)
-            if self.checkPos(pos[0], pos[1] - 1, visited):
-                queue.append(((pos[0], pos[1] - 1), dist + 1))
-            if self.checkPos(pos[0], pos[1] + 1, visited):
-                queue.append(((pos[0], pos[1] + 1), dist + 1))
-            if self.checkPos(pos[0] + 1, pos[1], visited):
-                queue.append(((pos[0] + 1, pos[1]), dist + 1))
-            if self.checkPos(pos[0] - 1, pos[1], visited):
-                queue.append(((pos[0] - 1, pos[1]), dist + 1))
-        return 10000
+            if x in visited:
+                continue
+            visited.add(x)
+            if self.checkPos2(x[0], x[1] - 1, visited):
+                self.aStarMap[x[0]][x[1] - 1] = 1 + self.aStarMap[x[0]][x[1]]
+                queue.append((x[0], x[1] - 1))
+
+            if self.checkPos2(x[0], x[1] + 1, visited):
+                self.aStarMap[x[0]][x[1] + 1] = 1 + self.aStarMap[x[0]][x[1]]
+                queue.append((x[0], x[1] + 1))
+
+            if self.checkPos2(x[0] + 1, x[1], visited):
+                self.aStarMap[x[0] + 1][x[1]] = 1 + self.aStarMap[x[0]][x[1]]
+                queue.append((x[0] + 1, x[1]))
+
+            if self.checkPos2(x[0] - 1, x[1], visited):
+                self.aStarMap[x[0] - 1][x[1]] = 1 + self.aStarMap[x[0]][x[1]]
+                queue.append((x[0] - 1, x[1]))
 
 
     def computeAStarDistance(self):
         agent_pos = np.array(self.Players[0].getPosition())
-        princess_pos = np.array(self.Allies[0].getPosition())
-        agent_pos = (agent_pos - 7.5) / 15; princess_pos = (princess_pos - 7.5) / 15
-        amap_x, amap_y = int(agent_pos[1]), int(agent_pos[0])
-        pmap_x, pmap_y = int(princess_pos[1]), int(princess_pos[0])
-        dist = self.findShortestPath((amap_x, amap_y), (pmap_x, pmap_y))
-        return dist
+        agent_pos = (agent_pos - 7.5) / 15
+        pos_x = min(int(agent_pos[1]), len(self.map) - 1); pos_y = min(int(agent_pos[0]), len(self.map) - 1)
+        return self.aStarMap[pos_x][pos_y]
 
     def populateMap(self):
         #if self.epCtr == 2:
@@ -258,6 +266,12 @@ class Board(object):
         self.epCtr -= 1
         # else:
         #    self.map = self.oldMap.copy()
+
+        # fill in astar distances between goal and every point
+        self.aStarMap = -1.0 * np.ones(self.map.shape)
+        self.shortestPaths(goalPos)
+        self.aStarMap = self.aStarMap.astype(np.int32)
+        self.aStarMap[self.aStarMap == -1] = 1000
 
         # post map fill, do this
         for x in range(len(self.map)):
