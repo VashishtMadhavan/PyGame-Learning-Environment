@@ -215,8 +215,8 @@ class Board(object):
     def computeAStarDistance(self):
         agent_pos = np.array(self.Players[0].getPosition())
         agent_pos = (agent_pos - 7.5) / 15
-        pos_x = min(int(agent_pos[1]), len(self.map) - 1); pos_y = min(int(agent_pos[0]), len(self.map) - 1)
-        return self.aStarMap[pos_x][pos_y]
+        agent_pos = np.clip(agent_pos, 0, len(self.map) - 1)
+        return self.aStarMap[int(agent_pos[1])][int(agent_pos[0])]
 
     def populateMap(self):
         #if self.epCtr == 2:
