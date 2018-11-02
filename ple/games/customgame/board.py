@@ -216,7 +216,7 @@ class Board(object):
         agent_pos = np.array(self.Players[0].getPosition())
         agent_pos = (agent_pos - 7.5) / 15
         agent_pos = np.clip(agent_pos, 0, len(self.map) - 1)
-        return self.aStarMap[int(agent_pos[1])][int(agent_pos[0])]
+        return self.aStarMap[int(round(agent_pos[1]))][int(round(agent_pos[0]))]
 
     def populateMap(self):
         #if self.epCtr == 2:
