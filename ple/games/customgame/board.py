@@ -250,10 +250,10 @@ class Board(object):
             # place fires
             firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
             for q, fp in enumerate(firePos):
-                if gapFlags[q]:
-                    self.map[fp[0]][fp[1]] = 12
-                else:
-                    self.map[fp[0]][fp[1]] = 0
+                #if gapFlags[q]:
+                self.map[fp[0]][fp[1]] = 12
+                #else:
+                #    self.map[fp[0]][fp[1]] = 0
             positions = self.removeInvalidPositions(positions)
 
             # place enemies
