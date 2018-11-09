@@ -222,7 +222,7 @@ class Board(object):
         #if self.epCtr == 2:
         if self.difficulty == 0:
             #j = choice([0, 2, 3, 4])
-            j = choice([0, 2])
+            j = choice([2])
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
@@ -236,8 +236,9 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
-            numFires = int(np.abs(gauss(self.vec[0], 1.0)))
-            numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
+            #numFires = int(np.abs(gauss(self.vec[0], 1.0)))
+            #numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
+            numFires = 0; numEnemies = 0
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
             positions = self.removeInvalidPositions(positions)
 
