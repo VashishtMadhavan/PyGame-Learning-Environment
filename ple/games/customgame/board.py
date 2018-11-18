@@ -18,11 +18,12 @@ class Board(object):
     A gameboard contains everthing related to our game on it like our characters, walls, ladders, enemies etc
     The generation of the level also happens in this class.
     '''
-    def __init__(self, vec, width, height, difficulty, epCtr, oldMap, rewards, _dir):
+    def __init__(self, vec, width, height, difficulty, easy_env_flag, epCtr, oldMap, rewards, _dir):
         # new variables
         self.epCtr = epCtr
         self.oldMap = oldMap
         self.difficulty = difficulty
+        self.easy_env_flag = easy_env_flag
 
         self.__width = width
         self.__actHeight = height
@@ -222,7 +223,11 @@ class Board(object):
         #if self.epCtr == 2:
         if self.difficulty == 0:
             #j = choice([0, 2, 3, 4])
-            j = choice([2, 3])
+            #j = choice([2, 3])
+            if self.easy_env_flag:
+                j = 2
+            else:
+                j = 3
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:

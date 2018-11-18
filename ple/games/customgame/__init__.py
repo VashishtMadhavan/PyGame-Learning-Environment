@@ -25,6 +25,8 @@ class customgame(PyGameWrapper):
 		self.difficulty = difficulty
 		self.astar = astar
 
+		self.easy_env_flag = 0 # plexes between 2 and 3
+
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
 		self.vec = vec
@@ -70,6 +72,7 @@ class customgame(PyGameWrapper):
 			self.width,
 			self.height,
 			self.difficulty,
+			self.easy_env_flag,
 			self.epCtr,
 			oldMap,
 			self.rewards,
