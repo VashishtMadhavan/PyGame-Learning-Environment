@@ -224,48 +224,48 @@ class Board(object):
         if self.difficulty == 0:
             #j = choice([0, 2, 3, 4])
             #j = choice([2, 3])
-            if self.easy_env_flag:
-                j = 2
-            else:
-                j = 3
+            #if self.easy_env_flag:
+            #    j = 2
+            #else:
+            #   j = 3
+            j = 2
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
             j = choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
-        self.map[self.map == 11] = 0
-        # if j not in [3,4]:
-        #     self.map[self.map == 12] = 1 # removing init fire position
-        #     self.map[self.map == 21] = 0 # removing init agent position
-        #     self.map[self.map == 20] = 0 # removing init princess position
-        #     self.map[self.map == 11] = 0 # removing init enemy position
+        if j not in [3,4]:
+            self.map[self.map == 12] = 1 # removing init fire position
+            self.map[self.map == 21] = 0 # removing init agent position
+            self.map[self.map == 20] = 0 # removing init princess position
+            self.map[self.map == 11] = 0 # removing init enemy position
 
-        #     #numFires = int(np.abs(gauss(self.vec[0], 1.0)))
-        #     #numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
-        #     numFires = 0; numEnemies = 0
-        #     positions = [tuple(y) for y in np.argwhere(self.map == 1)]
-        #     positions = self.removeInvalidPositions(positions)
+            #numFires = int(np.abs(gauss(self.vec[0], 1.0)))
+            #numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
+            # numFires = 0; numEnemies = 0
+            positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+            positions = self.removeInvalidPositions(positions)
 
-        #     # place princess + agent
-        #     agentPos, goalPos = self.placeAgents(positions)
-        #     self.map[agentPos[0]][agentPos[1]] = 21
-        #     self.map[goalPos[0]][goalPos[1]] = 20
-        #     positions = self.removeInvalidPositions(positions)
+            # place princess + agent
+            agentPos, goalPos = self.placeAgents(positions)
+            self.map[agentPos[0]][agentPos[1]] = 21
+            self.map[goalPos[0]][goalPos[1]] = 20
+            positions = self.removeInvalidPositions(positions)
 
-        #     # place fires
-        #     firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
-        #     for q, fp in enumerate(firePos):
-        #         #if gapFlags[q]:
-        #         self.map[fp[0]][fp[1]] = 12
-        #         #else:
-        #         #    self.map[fp[0]][fp[1]] = 0
-        #     positions = self.removeInvalidPositions(positions)
+            # place fires
+            # firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
+            # for q, fp in enumerate(firePos):
+            #     #if gapFlags[q]:
+            #     self.map[fp[0]][fp[1]] = 12
+            #     #else:
+            #     #    self.map[fp[0]][fp[1]] = 0
+            # positions = self.removeInvalidPositions(positions)
 
-        #     # place enemies
-        #     enemyPos = self.placeEnemies(positions, numEnemies)
-        #     for ep in enemyPos:
-        #         self.map[ep[0] - 1][ep[1]] = 11
+            # # place enemies
+            # enemyPos = self.placeEnemies(positions, numEnemies)
+            # for ep in enemyPos:
+            #     self.map[ep[0] - 1][ep[1]] = 11
 
            
         self.oldMap = self.map.copy()
