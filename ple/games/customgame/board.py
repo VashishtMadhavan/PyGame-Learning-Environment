@@ -223,11 +223,11 @@ class Board(object):
         #if self.epCtr == 2:
         if self.difficulty == 0:
             #j = choice([0, 2, 3, 4])
-            #j = choice([2, 3])
-            if self.easy_env_flag:
-                j = 2
-            else:
-                j = 3
+            j = choice([2, 3])
+            # if self.easy_env_flag:
+            #     j = 2
+            # else:
+            #     j = 3
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
