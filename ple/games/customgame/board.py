@@ -237,9 +237,8 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
-            #numFires = int(np.abs(gauss(self.vec[0], 1.0)))
-            #numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
-            # numFires = 0; numEnemies = 0
+            numFires = int(np.abs(gauss(self.vec[0], 1.0)))
+            numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
             positions = self.removeInvalidPositions(positions)
 
@@ -250,20 +249,16 @@ class Board(object):
             positions = self.removeInvalidPositions(positions)
 
             # place fires
-            # firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
-            # for q, fp in enumerate(firePos):
-            #     #if gapFlags[q]:
-            #     self.map[fp[0]][fp[1]] = 12
-            #     #else:
-            #     #    self.map[fp[0]][fp[1]] = 0
-            # positions = self.removeInvalidPositions(positions)
+            firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
+            for q, fp in enumerate(firePos):
+                self.map[fp[0]][fp[1]] = 12
+            positions = self.removeInvalidPositions(positions)
 
             # # place enemies
-            # enemyPos = self.placeEnemies(positions, numEnemies)
-            # for ep in enemyPos:
-            #     self.map[ep[0] - 1][ep[1]] = 11
+            enemyPos = self.placeEnemies(positions, numEnemies)
+            for ep in enemyPos:
+                self.map[ep[0] - 1][ep[1]] = 11
 
-           
         self.oldMap = self.map.copy()
         self.epCtr -= 1
         # else:
