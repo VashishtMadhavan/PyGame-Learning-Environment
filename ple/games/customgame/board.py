@@ -110,24 +110,27 @@ class Board(object):
         self.createGroups()
 
     def placeFiresAndGaps(self, pos, num_fires):
-        removedPos = []; flags = []
+        removedPos = []
         while num_fires > 0:
             x = pos[randint(0, len(pos) - 1)]
+            y = None; z = None
             if (x[0], x[1] - 1) in pos:
                 y = (x[0], x[1] - 1)
-            elif (x[0], x[1] + 1) in pos:
-                y = (x[0], x[1] + 1)
-            else:
-                y = None
+            if (x[0], x[1] + 1) in pos:
+                z = (x[0], x[1] + 1)
+
+            if not y and not z:
+                continue
+
             if x not in removedPos:
                 check = random() < 0.5
                 removedPos.append(x)
-                flags.append(check)
                 if y:
                     removedPos.append(y)
-                    flags.append(check)
+                if z:
+                    removedPos.append(z)
                 num_fires -= 1
-        return removedPos, flags
+        return removedPos
 
     def placeEnemies(self, pos, num_enemies):
         removedPos = []
@@ -222,7 +225,7 @@ class Board(object):
     def populateMap(self):
         #if self.epCtr == 2:
         if self.difficulty == 0:
-            j = choice([0, 2])
+            j = choice([0, 2, 5, 6, 8])
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
@@ -247,8 +250,8 @@ class Board(object):
             positions = self.removeInvalidPositions(positions)
 
             # place fires
-            firePos, gapFlags = self.placeFiresAndGaps(positions, numFires)
-            for q, fp in enumerate(firePos):
+            firePos = self.placeFiresAndGaps(positions, numFires)
+            for fp in firePos:
                 self.map[fp[0]][fp[1]] = 12
             positions = self.removeInvalidPositions(positions)
 
