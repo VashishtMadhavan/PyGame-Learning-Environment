@@ -238,8 +238,8 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
-            numFires = int(np.abs(gauss(self.vec[0], 1.0)))
-            numEnemies = int(np.abs(gauss(self.vec[1], 1.0)))
+            numFires = 1
+            numEnemies = 1
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
             positions = self.removeInvalidPositions(positions)
 
