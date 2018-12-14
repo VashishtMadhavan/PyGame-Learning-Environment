@@ -12,7 +12,7 @@ import os
 
 class customgame(PyGameWrapper):
 
-	def __init__(self, vec=None, difficulty=0, astar=False):
+	def __init__(self, difficulty=0):
 		"""
 		Parameters
 		----------
@@ -23,13 +23,11 @@ class customgame(PyGameWrapper):
 		self.flag = 1
 		self.epCtr = 1
 		self.difficulty = difficulty
-		self.astar = astar
 
 		self.easy_env_flag = 0 # plexes between 2 and 3
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
-		self.vec = vec
 		self.status = 2
 		actions = {
 			"left": K_a,
@@ -68,7 +66,6 @@ class customgame(PyGameWrapper):
 
 		# Create a new instance of the Board class
 		self.newGame = Board(
-			self.vec,
 			self.width,
 			self.height,
 			self.difficulty,
@@ -90,8 +87,6 @@ class customgame(PyGameWrapper):
 		self.numactions = 0
 
 	def getScore(self):
-		if self.astar:
-			return -1.0 * self.newGame.computeAStarDistance()
 		return self.newGame.score
 
 	def game_over(self):

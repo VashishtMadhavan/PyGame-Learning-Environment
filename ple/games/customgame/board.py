@@ -18,7 +18,7 @@ class Board(object):
     A gameboard contains everthing related to our game on it like our characters, walls, ladders, enemies etc
     The generation of the level also happens in this class.
     '''
-    def __init__(self, vec, width, height, difficulty, easy_env_flag, epCtr, oldMap, rewards, _dir):
+    def __init__(self, width, height, difficulty, easy_env_flag, epCtr, oldMap, rewards, _dir):
         # new variables
         self.epCtr = epCtr
         self.oldMap = oldMap
@@ -29,7 +29,6 @@ class Board(object):
         self.__actHeight = height
         self.__height = self.__actHeight + 10
         self.score = 0
-        self.vec = vec
         self.rewards = rewards
         self.cycles = 0  # For the characters animation
         self.direction = 0
@@ -232,6 +231,7 @@ class Board(object):
             j = choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
+
         if j not in [3,4]:
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
