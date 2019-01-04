@@ -233,7 +233,7 @@ class Board(object):
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-        if j not in [2,3,4]:
+        if j not in [3,4]:
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
             self.map[self.map == 20] = 0 # removing init princess position
