@@ -27,8 +27,8 @@ class Board(object):
         self.direction = 0
         self._dir = _dir
         
-        self.playerPosition = (180, 120)
-        self.princessPosition = (180,47)
+        self.playerPosition = (60, 200)
+        self.princessPosition = (60, 47)
 
         self.IMAGES = {
             "still": pygame.image.load(os.path.join(_dir, 'assets/still.png')).convert_alpha(),

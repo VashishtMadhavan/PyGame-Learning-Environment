@@ -224,8 +224,7 @@ class Board(object):
     def populateMap(self):
         #if self.epCtr == 2:
         if self.difficulty == 0:
-            #j = choice([0, 2, 5, 6, 8])
-            j = choice([0, 2])
+            j = choice([0, 2, 5, 6, 8, 11])
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
