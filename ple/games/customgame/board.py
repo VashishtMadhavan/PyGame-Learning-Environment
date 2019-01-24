@@ -224,7 +224,8 @@ class Board(object):
     def populateMap(self):
         #if self.epCtr == 2:
         if self.difficulty == 0:
-            j = choice([0, 2, 5, 6, 8, 11])
+            # keep 11 as test environment...
+            j = choice([0, 2, 3, 4, 5, 6, 9])
         elif self.difficulty == 1:
             j = choice([0, 2, 3, 4, 5, 6, 7, 8])
         elif self.difficulty == 2:
@@ -232,33 +233,32 @@ class Board(object):
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-        if j not in [3,4]:
-            self.map[self.map == 12] = 1 # removing init fire position
-            self.map[self.map == 21] = 0 # removing init agent position
-            self.map[self.map == 20] = 0 # removing init princess position
-            self.map[self.map == 11] = 0 # removing init enemy position
+        self.map[self.map == 12] = 1 # removing init fire position
+        self.map[self.map == 21] = 0 # removing init agent position
+        self.map[self.map == 20] = 0 # removing init princess position
+        self.map[self.map == 11] = 0 # removing init enemy position
 
-            numFires = 1
-            numEnemies = 1
-            positions = [tuple(y) for y in np.argwhere(self.map == 1)]
-            positions = self.removeInvalidPositions(positions)
+        numFires = 1
+        numEnemies = 1
+        positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+        positions = self.removeInvalidPositions(positions)
 
-            # place princess + agent
-            agentPos, goalPos = self.placeAgents(positions)
-            self.map[agentPos[0]][agentPos[1]] = 21
-            self.map[goalPos[0]][goalPos[1]] = 20
-            positions = self.removeInvalidPositions(positions)
+        # place princess + agent
+        agentPos, goalPos = self.placeAgents(positions)
+        self.map[agentPos[0]][agentPos[1]] = 21
+        self.map[goalPos[0]][goalPos[1]] = 20
+        positions = self.removeInvalidPositions(positions)
 
-            # place fires
-            firePos = self.placeFiresAndGaps(positions, numFires)
-            for fp in firePos:
-                self.map[fp[0]][fp[1]] = 12
-            positions = self.removeInvalidPositions(positions)
+        # place fires
+        firePos = self.placeFiresAndGaps(positions, numFires)
+        for fp in firePos:
+            self.map[fp[0]][fp[1]] = 12
+        positions = self.removeInvalidPositions(positions)
 
-            # # place enemies
-            enemyPos = self.placeEnemies(positions, numEnemies)
-            for ep in enemyPos:
-                self.map[ep[0] - 1][ep[1]] = 11
+        # # place enemies
+        enemyPos = self.placeEnemies(positions, numEnemies)
+        for ep in enemyPos:
+            self.map[ep[0] - 1][ep[1]] = 11
 
         self.oldMap = self.map.copy()
         self.epCtr -= 1
