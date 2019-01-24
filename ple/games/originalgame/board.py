@@ -27,7 +27,7 @@ class Board(object):
         self.direction = 0
         self._dir = _dir
         
-        self.playerPosition = (60, 200)
+        self.playerPosition = (80, 200)
         self.princessPosition = (60, 47)
 
         self.IMAGES = {
