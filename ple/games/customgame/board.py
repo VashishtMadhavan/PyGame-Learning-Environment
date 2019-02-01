@@ -18,13 +18,7 @@ class Board(object):
     A gameboard contains everthing related to our game on it like our characters, walls, ladders, enemies etc
     The generation of the level also happens in this class.
     '''
-    def __init__(self, width, height, difficulty, easy_env_flag, epCtr, oldMap, rewards, _dir):
-        # new variables
-        self.epCtr = epCtr
-        self.oldMap = oldMap
-        self.difficulty = difficulty
-        self.easy_env_flag = easy_env_flag
-
+    def __init__(self, width, height, rewards, _dir):
         self.__width = width
         self.__actHeight = height
         self.__height = self.__actHeight + 10
@@ -214,22 +208,8 @@ class Board(object):
                 self.aStarMap[x[0] - 1][x[1]] = 1 + self.aStarMap[x[0]][x[1]]
                 queue.append((x[0] - 1, x[1]))
 
-
-    def computeAStarDistance(self):
-        agent_pos = np.array(self.Players[0].getPosition())
-        agent_pos = (agent_pos - 7.5) / 15
-        agent_pos = np.clip(agent_pos, 0, len(self.map) - 1)
-        return self.aStarMap[int(round(agent_pos[1]))][int(round(agent_pos[0]))]
-
     def populateMap(self):
-        #if self.epCtr == 2:
-        if self.difficulty == 0:
-            # keep 11 as test environment...
-            j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
-        elif self.difficulty == 1:
-            j = choice([0, 2, 3, 4, 5, 6, 7, 8])
-        elif self.difficulty == 2:
-            j = choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
         map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
         self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
@@ -259,17 +239,6 @@ class Board(object):
         enemyPos = self.placeEnemies(positions, numEnemies)
         for ep in enemyPos:
             self.map[ep[0] - 1][ep[1]] = 11
-
-        self.oldMap = self.map.copy()
-        self.epCtr -= 1
-        # else:
-        #    self.map = self.oldMap.copy()
-
-        # fill in astar distances between goal and every point
-        self.aStarMap = -1.0 * np.ones(self.map.shape)
-        #self.shortestPaths(goalPos)
-        #self.aStarMap = self.aStarMap.astype(np.int32)
-        #self.aStarMap[self.aStarMap == -1] = 1000
 
         # post map fill, do this
         for x in range(len(self.map)):

@@ -12,19 +12,13 @@ import os
 
 class customgame(PyGameWrapper):
 
-	def __init__(self, difficulty=0):
+	def __init__(self):
 		"""
 		Parameters
 		----------
 		None
 
 		"""
-		# new variables
-		self.flag = 1
-		self.epCtr = 1
-		self.difficulty = difficulty
-
-		self.easy_env_flag = 0 # plexes between 2 and 3
 
 		self.height = 230 #modify height accordingly based on how long the game level is 
 		self.width = 230
@@ -58,29 +52,12 @@ class customgame(PyGameWrapper):
 		}
 
 	def init(self):
-		#print(self.epCtr)
-		if hasattr(self, 'newGame'):
-			oldMap = self.newGame.oldMap.copy()
-		else:
-			oldMap = None
-
 		# Create a new instance of the Board class
 		self.newGame = Board(
 			self.width,
 			self.height,
-			self.difficulty,
-			self.easy_env_flag,
-			self.epCtr,
-			oldMap,
 			self.rewards,
 			self._dir)
-
-		if not self.flag:
-			if self.epCtr == 1:
-				self.epCtr = 0
-			self.epCtr += 1
-		else:
-			self.flag = 0
 
 		# Assign groups from the Board instance that was created
 		self.playerGroup = self.newGame.playerGroup
