@@ -50,6 +50,7 @@ class customgame(PyGameWrapper):
 			"left2": pygame.image.load(os.path.join(self._dir, 'assets/left2.png')),
 			"still": pygame.image.load(os.path.join(self._dir, 'assets/still.png'))
 		}
+		self.task = None
 
 	def init(self):
 		# Create a new instance of the Board class
@@ -57,11 +58,18 @@ class customgame(PyGameWrapper):
 			self.width,
 			self.height,
 			self.rewards,
-			self._dir)
+			self._dir,
+			task=self.task)
 
 		# Assign groups from the Board instance that was created
 		self.playerGroup = self.newGame.playerGroup
 		self.numactions = 0
+
+	def get_task(self):
+		return self.newGame.map.flatten()
+
+	def set_task(self, task):
+		self.task = task
 
 	def getScore(self):
 		return self.newGame.score

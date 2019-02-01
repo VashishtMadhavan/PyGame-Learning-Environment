@@ -18,7 +18,7 @@ class Board(object):
     A gameboard contains everthing related to our game on it like our characters, walls, ladders, enemies etc
     The generation of the level also happens in this class.
     '''
-    def __init__(self, width, height, rewards, _dir):
+    def __init__(self, width, height, rewards, _dir, task=None):
         self.__width = width
         self.__actHeight = height
         self.__height = self.__actHeight + 10
@@ -27,6 +27,7 @@ class Board(object):
         self.cycles = 0  # For the characters animation
         self.direction = 0
         self._dir = _dir
+        self._task = task
         
         #self.playerPosition = (120, 190)
         
@@ -209,36 +210,39 @@ class Board(object):
                 queue.append((x[0] - 1, x[1]))
 
     def populateMap(self):
-        j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
-        map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
-        self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
+        if not self._task:
+            j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
+            map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
+            self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
-        self.map[self.map == 12] = 1 # removing init fire position
-        self.map[self.map == 21] = 0 # removing init agent position
-        self.map[self.map == 20] = 0 # removing init princess position
-        self.map[self.map == 11] = 0 # removing init enemy position
+            self.map[self.map == 12] = 1 # removing init fire position
+            self.map[self.map == 21] = 0 # removing init agent position
+            self.map[self.map == 20] = 0 # removing init princess position
+            self.map[self.map == 11] = 0 # removing init enemy position
 
-        numFires = 1
-        numEnemies = 1
-        positions = [tuple(y) for y in np.argwhere(self.map == 1)]
-        positions = self.removeInvalidPositions(positions)
+            numFires = 1
+            numEnemies = 1
+            positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+            positions = self.removeInvalidPositions(positions)
 
-        # place princess + agent
-        agentPos, goalPos = self.placeAgents(positions)
-        self.map[agentPos[0]][agentPos[1]] = 21
-        self.map[goalPos[0]][goalPos[1]] = 20
-        positions = self.removeInvalidPositions(positions)
+            # place princess + agent
+            agentPos, goalPos = self.placeAgents(positions)
+            self.map[agentPos[0]][agentPos[1]] = 21
+            self.map[goalPos[0]][goalPos[1]] = 20
+            positions = self.removeInvalidPositions(positions)
 
-        # place fires
-        firePos = self.placeFiresAndGaps(positions, numFires)
-        for fp in firePos:
-            self.map[fp[0]][fp[1]] = 12
-        positions = self.removeInvalidPositions(positions)
+            # place fires
+            firePos = self.placeFiresAndGaps(positions, numFires)
+            for fp in firePos:
+                self.map[fp[0]][fp[1]] = 12
+            positions = self.removeInvalidPositions(positions)
 
-        # # place enemies
-        enemyPos = self.placeEnemies(positions, numEnemies)
-        for ep in enemyPos:
-            self.map[ep[0] - 1][ep[1]] = 11
+            # # place enemies
+            enemyPos = self.placeEnemies(positions, numEnemies)
+            for ep in enemyPos:
+                self.map[ep[0] - 1][ep[1]] = 11
+        else:
+            self.map = self._task.reshape(16, 16)
 
         # post map fill, do this
         for x in range(len(self.map)):
