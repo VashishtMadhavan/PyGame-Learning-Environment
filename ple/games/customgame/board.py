@@ -210,7 +210,7 @@ class Board(object):
                 queue.append((x[0] - 1, x[1]))
 
     def populateMap(self):
-        if not self._task:
+        if self._task is None:
             j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
