@@ -220,6 +220,10 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
+            # randomly mirroring environments
+            if random() < 0.5:
+                self.map = np.flip(self.map, axis=1)
+
             numFires = 1
             numEnemies = 1
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
