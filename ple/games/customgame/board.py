@@ -126,6 +126,39 @@ class Board(object):
                 num_fires -= 1
         return removedPos
 
+    def placeLadders(self, pos, num_ladders):
+        removedPos = []
+        while num_ladders > 0:
+            x = pos[randint(0, len(pos) - 1)]
+            valid_pairs = []
+            if (x[0], x[1] - 1) in pos:
+                valid_pairs.append((x[0], x[1] - 1))
+            if (x[0], x[1] + 1) in pos:
+                valid_pairs.append((x[0], x[1] + 1))
+            y = choice(valid_pairs)
+
+            if x not in removedPos:
+                if x[0] == 4:
+                    for i in range(-1, 5):
+                        removedPos.append((x[0] + i, x[1]))
+                        removedPos.append((y[0] + i, y[1]))
+                elif x[0] == 14:
+                    for i in range(1, 7):
+                        removedPos.append((x[0] - i, x[1]))
+                        removedPos.append((y[0] - i, y[1]))
+                elif x[0] == 9:
+                    flip = random() < 0.5
+                    if flip:
+                        for i in range(-1, 5):
+                            removedPos.append((x[0] + i, x[1]))
+                            removedPos.append((y[0] + i, y[1]))
+                    else:
+                        for i in range(1, 7):
+                            removedPos.append((x[0] - i, x[1]))
+                            removedPos.append((y[0] - i, y[1]))
+                num_ladders -= 1
+        return removedPos
+
     def placeEnemies(self, pos, num_enemies):
         removedPos = []
         while num_enemies > 0:
@@ -211,9 +244,9 @@ class Board(object):
 
     def populateMap(self):
         if self._task is None:
-            j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
-            #j = 11
-            map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
+            #j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
+            #map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
+            map_file = os.path.join(self._dir, '../maps/map_base.txt')
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
             self.map[self.map == 12] = 1 # removing init fire position
@@ -221,13 +254,16 @@ class Board(object):
             self.map[self.map == 20] = 0 # removing init princess position
             self.map[self.map == 11] = 0 # removing init enemy position
 
-            # randomly mirroring environments
-            if random() < 0.5:
-                self.map = np.flip(self.map, axis=1)
-
             numFires = 1
             numEnemies = 1
+            numLadders = 2
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
+            positions = self.removeInvalidPositions(positions)
+
+            # place ladders
+            ladderPos = self.placeLadders(positions, numLadders)
+            for lp in ladderPos:
+                self.map[lp[0]][lp[1]] = 2
             positions = self.removeInvalidPositions(positions)
 
             # place princess + agent
@@ -246,6 +282,11 @@ class Board(object):
             enemyPos = self.placeEnemies(positions, numEnemies)
             for ep in enemyPos:
                 self.map[ep[0] - 1][ep[1]] = 11
+
+            # randomly mirroring environments
+            if random() < 0.5:
+                self.map = np.flip(self.map, axis=1)
+
         else:
             self.map = self._task.reshape(16, 16)
 
