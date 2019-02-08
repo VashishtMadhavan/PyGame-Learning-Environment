@@ -225,8 +225,8 @@ class Board(object):
             if random() < 0.5:
                 self.map = np.flip(self.map, axis=1)
 
-            numFires = round(abs(gauss(1, 1)))
-            numEnemies = round(abs(gauss(1, 1)))
+            numFires = 1
+            numEnemies = 1
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
             positions = self.removeInvalidPositions(positions)
 
