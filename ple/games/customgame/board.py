@@ -212,6 +212,7 @@ class Board(object):
     def populateMap(self):
         if self._task is None:
             j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
+            #j = 11
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
@@ -224,8 +225,8 @@ class Board(object):
             if random() < 0.5:
                 self.map = np.flip(self.map, axis=1)
 
-            numFires = 1
-            numEnemies = 1
+            numFires = round(abs(gauss(1, 1)))
+            numEnemies = round(abs(gauss(1, 1)))
             positions = [tuple(y) for y in np.argwhere(self.map == 1)]
             positions = self.removeInvalidPositions(positions)
 
