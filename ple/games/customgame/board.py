@@ -244,8 +244,9 @@ class Board(object):
 
     def populateMap(self):
         if self._task is None:
-            j = choice([0, 1, 2, 3, 4, 5, 6, 8, 9])
-            map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(j))
+            valid_maps = [0, 1, 2, 3, 4, 5, 6, 8, 9]
+            self.map_id = choice(range(len(valid_maps)))
+            map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(valid_maps[self.map_id]))
             #map_file = os.path.join(self._dir, '../maps/map_base.txt')
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
 
