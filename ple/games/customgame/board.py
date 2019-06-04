@@ -251,7 +251,7 @@ class Board(object):
             self.map_id = choice(range(len(valid_maps)))
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(valid_maps[self.map_id]))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
-            color_choice = choice(range(3)) # choose color of princess
+            self.color_choice = choice(range(3)) # choose color of princess
 
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
@@ -310,7 +310,7 @@ class Board(object):
                             15, 15))
                     self.playerPosition = (y * 15 + 15 / 2, x * 15 + 15 / 2) #also set player position
                 elif self.map[x][y] == 20:
-                    img_choice = self.IMAGES['princess{}'.format(color_choice)]
+                    img_choice = self.IMAGES['princess{}'.format(self.color_choice)]
                     #add princess at that location
                     self.Allies.append(
                         Person(

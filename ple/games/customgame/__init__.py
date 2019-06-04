@@ -66,7 +66,8 @@ class customgame(PyGameWrapper):
 		self.numactions = 0
 
 	def get_task(self):
-		return self.newGame.map_id
+		#return self.newGame.map_id
+		return self.newGame.color_choice
 
 	def set_task(self, task):
 		self.task = task
