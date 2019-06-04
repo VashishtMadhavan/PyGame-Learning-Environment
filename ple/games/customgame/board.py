@@ -36,6 +36,7 @@ class Board(object):
             "princess0": pygame.image.load(os.path.join(_dir, 'assets/princess.png')).convert_alpha(),
             "princess1": pygame.image.load(os.path.join(_dir, 'assets/princess1.png')).convert_alpha(),
             "princess2": pygame.image.load(os.path.join(_dir, 'assets/princess2.png')).convert_alpha(),
+            "princess3": pygame.image.load(os.path.join(_dir, 'assets/princess3.png')).convert_alpha(),
             "enemy1": pygame.image.load(os.path.join(_dir, 'assets/enemy1.png')).convert_alpha(),
             "enemy2": pygame.image.load(os.path.join(_dir, 'assets/fire.png')).convert_alpha(),
             "wood_block": pygame.image.load(os.path.join(_dir, 'assets/wood_block.png')).convert_alpha(),
@@ -246,8 +247,7 @@ class Board(object):
 
     def populateMap(self):
         if self._task is None:
-            #valid_maps = [0, 1, 2, 3, 4, 5, 6, 8, 9]
-            valid_maps = [2]
+            valid_maps = [0, 1, 2, 3, 4, 5, 6, 8, 9]
             self.map_id = choice(range(len(valid_maps)))
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(valid_maps[self.map_id]))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
