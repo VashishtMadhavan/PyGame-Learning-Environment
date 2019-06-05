@@ -27,16 +27,14 @@ class Board(object):
         self.cycles = 0  # For the characters animation
         self.direction = 0
         self._dir = _dir
+        self.princess_choices = [(196, 96, 236), (163, 187, 187), (195, 100, 43), (99, 234, 11), (217, 91, 61)]
         self._task = task
         
         #self.playerPosition = (120, 190)
         
         self.IMAGES = {
             "still": pygame.image.load(os.path.join(_dir, 'assets/still.png')).convert_alpha(),
-            "princess0": pygame.image.load(os.path.join(_dir, 'assets/princess.png')).convert_alpha(),
-            "princess1": pygame.image.load(os.path.join(_dir, 'assets/princess1.png')).convert_alpha(),
-            "princess2": pygame.image.load(os.path.join(_dir, 'assets/princess2.png')).convert_alpha(),
-            "princess3": pygame.image.load(os.path.join(_dir, 'assets/princess3.png')).convert_alpha(),
+            "princess": pygame.image.load(os.path.join(_dir, 'assets/blank.png')).convert_alpha(),
             "enemy1": pygame.image.load(os.path.join(_dir, 'assets/enemy1.png')).convert_alpha(),
             "enemy2": pygame.image.load(os.path.join(_dir, 'assets/fire.png')).convert_alpha(),
             "wood_block": pygame.image.load(os.path.join(_dir, 'assets/wood_block.png')).convert_alpha(),
@@ -251,7 +249,7 @@ class Board(object):
             self.map_id = choice(range(len(valid_maps)))
             map_file = os.path.join(self._dir, '../maps/map{}.txt'.format(valid_maps[self.map_id]))
             self.map = np.loadtxt(map_file, dtype='i', delimiter=',') #load new map everytime
-            self.color_choice = choice(range(3)) # choose color of princess
+            self.color_choice = choice(range(len(self.princess_choices))) # choose color of princess
 
             self.map[self.map == 12] = 1 # removing init fire position
             self.map[self.map == 21] = 0 # removing init agent position
@@ -310,7 +308,8 @@ class Board(object):
                             15, 15))
                     self.playerPosition = (y * 15 + 15 / 2, x * 15 + 15 / 2) #also set player position
                 elif self.map[x][y] == 20:
-                    img_choice = self.IMAGES['princess{}'.format(self.color_choice)]
+                    img_choice = self.IMAGES['princess']
+                    img_choice.fill(self.princess_choices[self.color_choice])
                     #add princess at that location
                     self.Allies.append(
                         Person(
