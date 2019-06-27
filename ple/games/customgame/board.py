@@ -27,8 +27,8 @@ class Board(object):
         self.cycles = 0  # For the characters animation
         self.direction = 0
         self._dir = _dir
-        self.princess_choices = [(196, 96, 236), (163, 187, 187), (195, 100, 43), (99, 234, 11), (217, 91, 61)]
-        self.princess_test_choices = [(255, 255, 255), (50, 50, 50), (255, 20, 20)]
+        self.princess_choices = [(196, 96, 236), (163, 187, 187)]
+        self.princess_test_choices = [(255, 50, 20)]
         self._task = task
         
         #self.playerPosition = (120, 190)
